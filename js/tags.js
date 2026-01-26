@@ -16,9 +16,6 @@ document.getElementById("addTagForm").addEventListener("submit", function (e) {
     });
 });
 
-// Remplissage du modal d'edition
-// NOTE: Les attributs data-* sur les boutons fournissent le contenu existant
-// pour pre-remplir les champs du formulaire.
 document.querySelectorAll(".edit-tag").forEach((btn) => {
   btn.addEventListener("click", function () {
     document.getElementById("edit_tag_id").value = this.dataset.id;

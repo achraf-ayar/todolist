@@ -96,6 +96,19 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $taches = $stmt->fetchAll();
+
+$tags = $pdo->query("SELECT * FROM etiquettes ORDER BY nom")->fetchAll();
+
+$tacheEtiquettes = [];
+if (!empty($taches)) {
+    $ids = array_column($taches, 'id');
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmtTags = $pdo->prepare("\n        SELECT te.tache_id, e.id as tag_id, e.nom, e.couleur\n        FROM taches_etiquettes te\n        JOIN etiquettes e ON te.etiquette_id = e.id\n        WHERE te.tache_id IN ($placeholders)\n        ORDER BY e.nom\n    ");
+    $stmtTags->execute($ids);
+    foreach ($stmtTags->fetchAll() as $row) {
+        $tacheEtiquettes[$row['tache_id']][] = $row;
+    }
+}
 ?>
 
 <!-- Liste des tâches -->
@@ -157,6 +170,14 @@ $taches = $stmt->fetchAll();
                                 <?= $statutText[$tache['statut']] ?>
                             </span>
                         </div>
+
+                        <?php if (!empty($tacheEtiquettes[$tache['id']])): ?>
+                            <div class="mb-2">
+                                <?php foreach ($tacheEtiquettes[$tache['id']] as $tag): ?>
+                                    <span class="badge" style="background-color: <?= htmlspecialchars($tag['couleur']) ?>;">#<?= htmlspecialchars($tag['nom']) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                         
                         <?php if ($tache['date_echeance']): ?>
                             <p class="card-text small">
@@ -175,7 +196,8 @@ $taches = $stmt->fetchAll();
                                     data-projet="<?= $tache['projet_id'] ?>"
                                     data-priorite="<?= $tache['priorite'] ?>"
                                     data-statut="<?= $tache['statut'] ?>"
-                                    data-date="<?= $tache['date_echeance'] ?>">
+                                    data-date="<?= $tache['date_echeance'] ?>"
+                                    data-tags="<?= !empty($tacheEtiquettes[$tache['id']]) ? htmlspecialchars(implode(',', array_column($tacheEtiquettes[$tache['id']], 'tag_id'))) : '' ?>">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm btn-outline-danger delete-task" 
