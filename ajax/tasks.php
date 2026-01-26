@@ -5,6 +5,23 @@ header('Content-Type: application/json');
 
 $action = $_GET['action'] ?? '';
 
+function syncTags(PDO $pdo, int $tacheId, array $tagIds): void {
+    $cleanIds = array_values(array_unique(array_filter(array_map('intval', $tagIds), function ($id) {
+        return $id > 0;
+    })));
+
+    $pdo->prepare('DELETE FROM taches_etiquettes WHERE tache_id = ?')->execute([$tacheId]);
+
+    if (empty($cleanIds)) {
+        return;
+    }
+
+    $stmt = $pdo->prepare('INSERT INTO taches_etiquettes (tache_id, etiquette_id) VALUES (?, ?)');
+    foreach ($cleanIds as $tagId) {
+        $stmt->execute([$tacheId, $tagId]);
+    }
+}
+
 try {
     switch ($action) {
         case 'add':
@@ -14,6 +31,7 @@ try {
             $priorite = $_POST['priorite'] ?? 'normale';
             $statut = $_POST['statut'] ?? 'a_faire';
             $date_echeance = !empty($_POST['date_echeance']) ? $_POST['date_echeance'] : null;
+            $tags = $_POST['tags'] ?? [];
             
             if (empty($titre)) {
                 throw new Exception('Le titre de la tâche est requis');
@@ -24,11 +42,13 @@ try {
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([$titre, $description, $projet_id, $priorite, $statut, $date_echeance]);
+            $tacheId = (int) $pdo->lastInsertId();
+            syncTags($pdo, $tacheId, $tags);
             
             echo json_encode([
                 'success' => true,
                 'message' => 'Tache créée avec succès',
-                'id' => $pdo->lastInsertId()
+                'id' => $tacheId
             ]);
             break;
             
@@ -40,6 +60,7 @@ try {
             $priorite = $_POST['priorite'] ?? 'normale';
             $statut = $_POST['statut'] ?? 'a_faire';
             $date_echeance = !empty($_POST['date_echeance']) ? $_POST['date_echeance'] : null;
+            $tags = $_POST['tags'] ?? [];
             
             if (empty($titre)) {
                 throw new Exception('Le titre de la tache est requis');
@@ -51,6 +72,7 @@ try {
                 WHERE id = ?
             ");
             $stmt->execute([$titre, $description, $projet_id, $priorite, $statut, $date_echeance, $id]);
+            syncTags($pdo, $id, $tags);
             
             echo json_encode([
                 'success' => true,

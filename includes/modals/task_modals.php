@@ -44,6 +44,17 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Étiquettes</label>
+                        <input type="text" class="form-control form-control-sm mb-2" id="add_tag_search" placeholder="Rechercher une étiquette...">
+                        
+                        <select class="form-select d-none" id="tags" name="tags[]" multiple>
+                            <?php foreach ($tags as $tag): ?>
+                                <option value="<?= $tag['id'] ?>">#<?= htmlspecialchars($tag['nom']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        
+                    </div>
+                    <div class="mb-3">
                         <label for="date_echeance" class="form-label">Date d'échéance</label>
                         <input type="date" class="form-control" id="date_echeance" name="date_echeance">
                     </div>
@@ -104,6 +115,19 @@
                                 <option value="termine">Terminé</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Étiquettes</label>
+                        <input type="text" class="form-control form-control-sm mb-2" id="edit_tag_search" placeholder="Rechercher une étiquette...">
+                        <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;" id="edit_tag_list" data-tags='<?= htmlspecialchars(json_encode($tags), ENT_QUOTES, "UTF-8") ?>'>
+                            <small class="text-muted">Tapez pour rechercher une étiquette.</small>
+                        </div>
+                        <select class="form-select d-none" id="edit_tags" name="tags[]" multiple>
+                            <?php foreach ($tags as $tag): ?>
+                                <option value="<?= $tag['id'] ?>">#<?= htmlspecialchars($tag['nom']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+               
                     </div>
                     <div class="mb-3">
                         <label for="edit_date_echeance" class="form-label">Date d'échéance</label>

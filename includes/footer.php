@@ -3,7 +3,7 @@
     <footer class="bg-light text-center py-3 mt-5">
         <div class="container">
             <p class="mb-0 text-muted">
-                &copy; <?= date('Y') ?> Gestionnaire de Taches
+                &copy; 2026 Gestionnaire de Taches
             </p>
         </div>
     </footer>
