@@ -29,7 +29,7 @@ $projets = $stmt->fetchAll();
     <?php if (empty($projets)): ?>
         <div class="col-12">
             <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Aucun projet pour le moment. Créez votre premier projet !
+                Aucun projet pour le moment. Créez votre premier projet !
             </div>
         </div>
     <?php else: ?>
@@ -44,7 +44,7 @@ $projets = $stmt->fetchAll();
                     <div class="card-body">
                         <div class="mb-3">
                             <p class="mb-1">
-                                <strong>Tâches totales :</strong> <?= $projet['nb_taches'] ?>
+                                <strong>Taches totales :</strong> <?= $projet['nb_taches'] ?>
                             </p>
                             <p class="mb-1">
                                 <strong>Terminées :</strong> <?= $projet['nb_terminees'] ?>

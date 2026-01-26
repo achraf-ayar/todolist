@@ -27,7 +27,7 @@ try {
             
             echo json_encode([
                 'success' => true,
-                'message' => 'Tâche créée avec succès',
+                'message' => 'Tache créée avec succès',
                 'id' => $pdo->lastInsertId()
             ]);
             break;
@@ -42,7 +42,7 @@ try {
             $date_echeance = !empty($_POST['date_echeance']) ? $_POST['date_echeance'] : null;
             
             if (empty($titre)) {
-                throw new Exception('Le titre de la tâche est requis');
+                throw new Exception('Le titre de la tache est requis');
             }
             
             $stmt = $pdo->prepare("
@@ -54,7 +54,7 @@ try {
             
             echo json_encode([
                 'success' => true,
-                'message' => 'Tâche modifiée avec succès'
+                'message' => 'Tache modifiée avec succès'
             ]);
             break;
             
@@ -71,7 +71,7 @@ try {
             
             echo json_encode([
                 'success' => true,
-                'message' => 'Tâche supprimée avec succès'
+                'message' => 'Tache supprimée avec succès'
             ]);
             break;
             
