@@ -114,6 +114,33 @@ try {
                 'message' => 'Statut mis à jour'
             ]);
             break;
+
+        case 'updateOrder':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $updates = $data['updates'] ?? [];
+            
+            if (empty($updates)) {
+                throw new Exception('Pas de mises à jour');
+            }
+            
+            $stmt = $pdo->prepare("UPDATE taches SET statut = ?, ordre = ? WHERE id = ?");
+            foreach ($updates as $item) {
+                $id = intval($item['id'] ?? 0);
+                $statut = $item['statut'] ?? '';
+                $ordre = intval($item['ordre'] ?? 0);
+                
+                if ($id <= 0 || !in_array($statut, ['a_faire', 'en_cours', 'termine'])) {
+                    continue;
+                }
+                
+                $stmt->execute([$statut, $ordre, $id]);
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Ordre mis à jour'
+            ]);
+            break;
             
         default:
             throw new Exception('Action non reconnue');
