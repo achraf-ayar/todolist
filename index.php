@@ -1,21 +1,21 @@
 <?php require_once 'includes/header.php'; ?>
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <h2><i class="fas fa-tasks"></i> Mes Taches</h2>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
     </div>
-    <div class="col-md-6 text-end">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-primary" id="quickSearchBtn" aria-label="Rechercher"><i class="fas fa-magnifying-glass"></i></button>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-            <i class="fas fa-plus"></i> Nouvelle Tache
+            <i class="fas fa-plus"></i> Nouvelle tâche
         </button>
     </div>
 </div>
 
-<div class="card mb-4 border-0">
+<div class="card mb-4 border-0 shadow-sm">
     <div class="card-body">
-        <form method="GET" id="filterForm" class="row g-3">
+        <form method="GET" id="filterForm" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label class="form-label"><i class="fas fa-folder"></i> Projet</label>
+                <label class="form-label label-muted"><i class="fas fa-folder"></i> Projet</label>
                 <select name="projet" class="form-select" id="filterProjet">
                     <option value="">Tous les projets</option>
                     <?php
@@ -28,7 +28,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label"><i class="fas fa-exclamation-circle"></i> Priorité</label>
+                <label class="form-label label-muted"><i class="fas fa-exclamation-circle"></i> Priorité</label>
                 <select name="priorite" class="form-select" id="filterPriorite">
                     <option value="">Toutes</option>
                     <option value="basse" <?= (isset($_GET['priorite']) && $_GET['priorite'] == 'basse') ? 'selected' : '' ?>>Basse</option>
@@ -37,7 +37,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label"><i class="fas fa-check-circle"></i> Statut</label>
+                <label class="form-label label-muted"><i class="fas fa-check-circle"></i> Statut</label>
                 <select name="statut" class="form-select" id="filterStatut">
                     <option value="">Tous</option>
                     <option value="a_faire" <?= (isset($_GET['statut']) && $_GET['statut'] == 'a_faire') ? 'selected' : '' ?>>À faire</option>
@@ -46,12 +46,9 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter"></i> Filtrer
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter"></i> Filtrer
+                </button>
             </div>
         </form>
     </div>
@@ -103,7 +100,13 @@ $tacheEtiquettes = [];
 if (!empty($taches)) {
     $ids = array_column($taches, 'id');
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $stmtTags = $pdo->prepare("\n        SELECT te.tache_id, e.id as tag_id, e.nom, e.couleur\n        FROM taches_etiquettes te\n        JOIN etiquettes e ON te.etiquette_id = e.id\n        WHERE te.tache_id IN ($placeholders)\n        ORDER BY e.nom\n    ");
+    $stmtTags = $pdo->prepare("
+        SELECT te.tache_id, e.id as tag_id, e.nom, e.couleur
+        FROM taches_etiquettes te
+        JOIN etiquettes e ON te.etiquette_id = e.id
+        WHERE te.tache_id IN ($placeholders)
+        ORDER BY e.nom
+    ");
     $stmtTags->execute($ids);
     foreach ($stmtTags->fetchAll() as $row) {
         $tacheEtiquettes[$row['tache_id']][] = $row;
@@ -112,105 +115,109 @@ if (!empty($taches)) {
 ?>
 
 <!-- Liste des tâches -->
-<div class="row">
-    <?php foreach ($taches as $tache): ?>
+<?php if (empty($taches)): ?>
+    <div class="alert-empty">
+        <div class="mb-2" style="font-size: 2rem;">
+            <i class="fas fa-inbox"></i>
+        </div>
+        <p class="mb-2 fw-semibold">Aucune tâche pour le moment</p>
+        <p class="text-muted-foreground mb-3">Créez votre première tâche ou importez vos actions prioritaires.</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">Nouvelle tâche</button>
+    </div>
+<?php else: ?>
+    <div class="task-grid">
+        <?php foreach ($taches as $tache): ?>
             <?php
-          
             $prioriteBadge = [
-                'basse' => 'bg-success',
-                'normale' => 'bg-primary',
-                'haute' => 'bg-danger'
+                'basse' => 'badge-priorite-basse',
+                'normale' => 'badge-priorite-normale',
+                'haute' => 'badge-priorite-haute'
             ];
-            
-          
-            $statutBadge = [
-                'a_faire' => 'bg-secondary',
-                'en_cours' => 'bg-warning',
-                'termine' => 'bg-success'
+
+            $statutIcon = [
+                'a_faire' => 'fa-circle-dot',
+                'en_cours' => 'fa-clock',
+                'termine' => 'fa-check-circle'
             ];
-            
+
             $statutText = [
                 'a_faire' => 'À faire',
                 'en_cours' => 'En cours',
                 'termine' => 'Terminé'
             ];
-            
-          
-            $enRetard = false;
-            if ($tache['date_echeance'] && $tache['statut'] != 'termine') {
-                $enRetard = strtotime($tache['date_echeance']) < time();
-            }
-            ?>
-            
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card h-100 shadow-sm">
-                    <?php if ($tache['projet_nom']): ?>
-                        <div class="card-header py-1" style="background-color: <?= htmlspecialchars($tache['projet_couleur']) ?>; color: white;">
-                            <small><i class="fas fa-folder"></i> <?= htmlspecialchars($tache['projet_nom']) ?></small>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <?= htmlspecialchars($tache['titre']) ?>
-                        </h5>
-                        
-                        <?php if ($tache['description']): ?>
-                            <p class="card-text text-muted small">
-                                <?= nl2br(htmlspecialchars(substr($tache['description'], 0, 100))) ?>
-                                <?= strlen($tache['description']) > 100 ? '...' : '' ?>
-                            </p>
-                        <?php endif; ?>
-                        
-                        <div class="mb-2">
-                            <span class="badge <?= $prioriteBadge[$tache['priorite']] ?>">
-                                <?= ucfirst($tache['priorite']) ?>
-                            </span>
-                            <span class="badge <?= $statutBadge[$tache['statut']] ?>">
-                                <?= $statutText[$tache['statut']] ?>
-                            </span>
-                        </div>
 
-                        <?php if (!empty($tacheEtiquettes[$tache['id']])): ?>
-                            <div class="mb-2">
-                                <?php foreach ($tacheEtiquettes[$tache['id']] as $tag): ?>
-                                    <span class="badge" style="background-color: <?= htmlspecialchars($tag['couleur']) ?>;">#<?= htmlspecialchars($tag['nom']) ?></span>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if ($tache['date_echeance']): ?>
-                            <p class="card-text small">
-                                <i class="fas fa-calendar"></i> 
-                                <?= date('d/m/Y', strtotime($tache['date_echeance'])) ?>
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="card-footer bg-white">
-                        <div class="btn-group w-100" role="group">
-                            <button class="btn btn-sm btn-outline-primary edit-task" 
-                                    data-id="<?= $tache['id'] ?>"
-                                    data-titre="<?= htmlspecialchars($tache['titre']) ?>"
-                                    data-description="<?= htmlspecialchars($tache['description']) ?>"
-                                    data-projet="<?= $tache['projet_id'] ?>"
-                                    data-priorite="<?= $tache['priorite'] ?>"
-                                    data-statut="<?= $tache['statut'] ?>"
-                                    data-date="<?= $tache['date_echeance'] ?>"
-                                    data-tags="<?= !empty($tacheEtiquettes[$tache['id']]) ? htmlspecialchars(implode(',', array_column($tacheEtiquettes[$tache['id']], 'tag_id'))) : '' ?>">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger delete-task" 
-                                    data-id="<?= $tache['id'] ?>"
-                                    data-titre="<?= htmlspecialchars($tache['titre']) ?>">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
+            $projectColor = isset($tache['projet_couleur']) ? ltrim($tache['projet_couleur'], '#') : '';
+            $projR = $projectColor ? hexdec(substr($projectColor, 0, 2)) : 51;
+            $projG = $projectColor ? hexdec(substr($projectColor, 2, 2)) : 65;
+            $projB = $projectColor ? hexdec(substr($projectColor, 4, 2)) : 85;
+            ?>
+
+            <article class="task-card">
+                <div class="task-actions">
+                    <button class="btn btn-sm btn-outline-secondary edit-task" 
+                            data-id="<?= $tache['id'] ?>"
+                            data-titre="<?= htmlspecialchars($tache['titre']) ?>"
+                            data-description="<?= htmlspecialchars($tache['description']) ?>"
+                            data-projet="<?= $tache['projet_id'] ?>"
+                            data-priorite="<?= $tache['priorite'] ?>"
+                            data-statut="<?= $tache['statut'] ?>"
+                            data-date="<?= $tache['date_echeance'] ?>"
+                            data-tags="<?= !empty($tacheEtiquettes[$tache['id']]) ? htmlspecialchars(implode(',', array_column($tacheEtiquettes[$tache['id']], 'tag_id'))) : '' ?>">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-task" 
+                            data-id="<?= $tache['id'] ?>"
+                            data-titre="<?= htmlspecialchars($tache['titre']) ?>">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
-            </div>
+
+                <?php if ($tache['projet_nom']): ?>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="tag-badge-muted" style="background: rgba(<?= $projR ?>, <?= $projG ?>, <?= $projB ?>, 0.15); color: <?= htmlspecialchars($tache['projet_couleur']) ?>;">
+                            <i class="fas fa-folder"></i> <?= htmlspecialchars($tache['projet_nom']) ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
+
+                <h5 class="mb-2"><?= htmlspecialchars($tache['titre']) ?></h5>
+
+                <?php if ($tache['description']): ?>
+                    <p class="text-subtle leading-relaxed mb-3">
+                        <?= nl2br(htmlspecialchars(substr($tache['description'], 0, 140))) ?>
+                        <?= strlen($tache['description']) > 140 ? '...' : '' ?>
+                    </p>
+                <?php endif; ?>
+
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge-soft <?= $prioriteBadge[$tache['priorite']] ?>">
+                        <i class="fas fa-flag"></i> <?= ucfirst($tache['priorite']) ?>
+                    </span>
+                    <span class="badge-soft badge-status">
+                        <i class="fas <?= $statutIcon[$tache['statut']] ?>"></i> <?= $statutText[$tache['statut']] ?>
+                    </span>
+                </div>
+
+                <?php if (!empty($tacheEtiquettes[$tache['id']])): ?>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <?php foreach ($tacheEtiquettes[$tache['id']] as $tag): ?>
+                            <span class="tag-pill" style="border-color: <?= htmlspecialchars($tag['couleur']) ?>; color: <?= htmlspecialchars($tag['couleur']) ?>;">
+                                <i class="fas fa-tag"></i> <?= htmlspecialchars($tag['nom']) ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($tache['date_echeance']): ?>
+                    <div class="d-flex align-items-center gap-2 text-subtle">
+                        <i class="fas fa-calendar"></i>
+                        <span class="relative-date" data-date="<?= htmlspecialchars($tache['date_echeance']) ?>"><?= date('d/m/Y', strtotime($tache['date_echeance'])) ?></span>
+                    </div>
+                <?php endif; ?>
+            </article>
         <?php endforeach; ?>
-</div>
+    </div>
+<?php endif; ?>
 
 
 <?php 

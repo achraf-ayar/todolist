@@ -1,12 +1,12 @@
 <?php require_once 'includes/header.php'; ?>
 
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h2><i class="fas fa-tags"></i> Mes Étiquettes</h2>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+
     </div>
-    <div class="col-md-4 text-end">
+    <div class="d-flex align-items-center gap-2">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTagModal">
-            <i class="fas fa-plus"></i> Nouvelle étiquette
+            <i class="fas fa-plus"></i> Nouveau tag
         </button>
     </div>
 </div>
@@ -22,14 +22,17 @@ $stmt = $pdo->query("
 $etiquettes = $stmt->fetchAll();
 ?>
 
-<div class="row">
-    <?php if (empty($etiquettes)): ?>
-        <div class="col-12">
-            <div class="alert alert-info">
-                Aucune étiquette pour le moment. Ajoutez votre première étiquette !
-            </div>
+<?php if (empty($etiquettes)): ?>
+    <div class="alert-empty">
+        <div class="mb-2" style="font-size: 2rem;">
+            <i class="fas fa-tags"></i>
         </div>
-    <?php else: ?>
+        <p class="mb-2 fw-semibold">Aucun tag pour le moment</p>
+        <p class="text-muted-foreground mb-3">Ajoutez des tags pour catégoriser vos tâches.</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTagModal">Nouveau tag</button>
+    </div>
+<?php else: ?>
+    <div class="row">
         <?php foreach ($etiquettes as $tag): ?>
             <div class="col-md-4 col-lg-3 mb-4">
                 <div class="card h-100 shadow-sm">
@@ -57,8 +60,8 @@ $etiquettes = $stmt->fetchAll();
                 </div>
             </div>
         <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
 
 <?php 
 $page_scripts = ['js/tags.js'];

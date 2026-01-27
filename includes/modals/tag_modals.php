@@ -58,3 +58,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Confirmer suppression tag -->
+<div class="modal fade" id="deleteTagModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Supprimer le tag</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Voulez-vous vraiment supprimer le tag <strong id="delete_tag_name"></strong> ?</p>
+                <p class="text-muted"><i class="fas fa-info-circle"></i> Ce tag sera retiré de toutes les tâches associées.</p>
+                <input type="hidden" id="delete_tag_id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteTag">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

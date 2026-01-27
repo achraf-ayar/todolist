@@ -4,50 +4,46 @@ $pageTitle = 'Statistiques';
 include 'includes/header.php';
 ?>
 
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h2><i class="fas fa-chart-line me-2"></i>Statistiques</h2>
-        </div>
-    </div>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+  
+</div>
     
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Total Tâches</h5>
-                    <h2 class="mb-0" id="stat-total">0</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Complétées cette semaine</h5>
-                    <h2 class="mb-0 text-success" id="stat-semaine">0</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">En retard</h5>
-                    <h2 class="mb-0 text-danger" id="stat-retard">0</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Taux de complétion</h5>
-                    <h2 class="mb-0 text-primary" id="stat-completion">0%</h2>
-                </div>
+        <div class="card text-center stat-card">
+            <div class="card-body">
+                <h5 class="card-title text-muted-foreground mb-2">Total Tâches</h5>
+                <h2 class="mb-0 stat-value" id="stat-total">0</h2>
             </div>
         </div>
     </div>
-    
-   
-    
+    <div class="col-md-3">
+        <div class="card text-center stat-card">
+            <div class="card-body">
+                <h5 class="card-title text-muted-foreground mb-2">Complétées cette semaine</h5>
+                <h2 class="mb-0 stat-value stat-success" id="stat-semaine">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center stat-card">
+            <div class="card-body">
+                <h5 class="card-title text-muted-foreground mb-2">En retard</h5>
+                <h2 class="mb-0 stat-value stat-danger" id="stat-retard">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center stat-card">
+            <div class="card-body">
+                <h5 class="card-title text-muted-foreground mb-2">Taux de complétion</h5>
+                <h2 class="mb-0 stat-value stat-primary" id="stat-completion">0%</h2>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
     <!-- Graphiques -->
     <div class="row">
         <!--(Camembert) -->
@@ -87,17 +83,28 @@ include 'includes/header.php';
             </div>
         </div>
     </div>
-    
-   
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+const isDark = document.body.classList.contains('theme-dark');
+const textColor = isDark ? '#e2e8f0' : '#0f172a';
+const gridColor = isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(71, 85, 105, 0.1)';
+const borderColor = isDark ? '#334155' : '#ffffff';
+
+// Dataset colors tuned for light/dark themes
+const accentColor = isDark ? '#FF8A5B' : '#FF7444';
+const accentBg = isDark ? 'rgba(255, 138, 91, 0.20)' : 'rgba(255, 116, 68, 0.10)';
+const barColor = isDark ? '#60a5fa' : '#FF7444';
+const barBorder = isDark ? '#3b82f6' : '#E6652F';
+
+Chart.defaults.color = textColor;
+Chart.defaults.borderColor = gridColor;
 
 const couleurStatut = {
-    'a_faire': '#007bff',
-    'en_cours': '#ffc107',
-    'termine': '#28a745'
+    'a_faire': '#3b82f6',
+    'en_cours': '#fbbf24',
+    'termine': '#22c55e'
 };
 
 fetch('ajax/stats.php')
@@ -135,12 +142,12 @@ fetch('ajax/stats.php')
                 datasets: [{
                     label: 'Tâches complétées',
                     data: valuesCompletion,
-                    borderColor: '#17a2b8',
-                    backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                    borderColor: accentColor,
+                    backgroundColor: accentBg,
                     fill: true,
                     tension: 0.3,
                     borderWidth: 2,
-                    pointBackgroundColor: '#17a2b8',
+                    pointBackgroundColor: accentColor,
                     pointBorderWidth: 2,
                     pointRadius: 4
                 }]
@@ -152,7 +159,19 @@ fetch('ajax/stats.php')
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
                         }
                     }
                 },
@@ -187,7 +206,7 @@ fetch('ajax/stats.php')
                     data: data.taches_par_statut.map(s => s.count),
                     backgroundColor: data.taches_par_statut.map(s => couleurStatut[s.statut] || '#6c757d'),
                     borderWidth: 2,
-                    borderColor: '#fff'
+                    borderColor: borderColor
                 }]
             },
             options: {
@@ -195,7 +214,10 @@ fetch('ajax/stats.php')
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: textColor
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -219,8 +241,8 @@ fetch('ajax/stats.php')
                 datasets: [{
                     label: 'Nombre de tâches',
                     data: data.taches_par_projet.map(p => p.count),
-                    backgroundColor: '#007bff',
-                    borderColor: '#0056b3',
+                    backgroundColor: barColor,
+                    borderColor: barBorder,
                     borderWidth: 1
                 }]
             },
@@ -231,7 +253,19 @@ fetch('ajax/stats.php')
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
                         }
                     }
                 },

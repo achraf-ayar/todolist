@@ -1,12 +1,11 @@
 <?php require_once 'includes/header.php'; ?>
 
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h2><i class="fas fa-folder"></i> Mes Projets</h2>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
     </div>
-    <div class="col-md-4 text-end">
+    <div class="d-flex align-items-center gap-2">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProjectModal">
-            <i class="fas fa-plus"></i> Nouveau Projet
+            <i class="fas fa-plus"></i> Nouveau projet
         </button>
     </div>
 </div>
@@ -25,14 +24,17 @@ $stmt = $pdo->query("
 $projets = $stmt->fetchAll();
 ?>
 
-<div class="row">
-    <?php if (empty($projets)): ?>
-        <div class="col-12">
-            <div class="alert alert-info">
-                Aucun projet pour le moment. Créez votre premier projet !
-            </div>
+<?php if (empty($projets)): ?>
+    <div class="alert-empty">
+        <div class="mb-2" style="font-size: 2rem;">
+            <i class="fas fa-folder-open"></i>
         </div>
-    <?php else: ?>
+        <p class="mb-2 fw-semibold">Aucun projet pour le moment</p>
+        <p class="text-muted-foreground mb-3">Créez votre premier projet pour organiser vos tâches.</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProjectModal">Nouveau projet</button>
+    </div>
+<?php else: ?>
+    <div class="row">
         <?php foreach ($projets as $projet): ?>
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">
@@ -43,10 +45,10 @@ $projets = $stmt->fetchAll();
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <p class="mb-1">
+                            <p class="mb-1 project-stat">
                                 <strong>Taches totales :</strong> <?= $projet['nb_taches'] ?>
                             </p>
-                            <p class="mb-1">
+                            <p class="mb-1 project-stat">
                                 <strong>Terminées :</strong> <?= $projet['nb_terminees'] ?>
                             </p>
                             <?php if ($projet['nb_taches'] > 0): ?>
@@ -61,7 +63,7 @@ $projets = $stmt->fetchAll();
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="card-footer bg-white">
+                    <div class="card-footer">
                         <a href="index.php?projet=<?= $projet['id'] ?>" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-eye"></i> Voir les tâches
                         </a>
@@ -80,13 +82,12 @@ $projets = $stmt->fetchAll();
                 </div>
             </div>
         <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
 
 <?php require_once 'includes/modals/project_modals.php'; ?>
 
 <script>
-
 document.getElementById('addProjectForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
@@ -98,13 +99,14 @@ document.getElementById('addProjectForm').addEventListener('submit', function(e)
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            window.Jikko?.showToast('Projet créé', 'Il apparait dans la liste.');
+            setTimeout(() => location.reload(), 500);
         } else {
-            alert('Erreur : ' + data.message);
+            window.Jikko?.showToast('Erreur', data.message || 'Impossible de créer le projet');
         }
-    });
+    })
+    .catch(() => window.Jikko?.showToast('Erreur', 'Veuillez réessayer.'));
 });
-
 
 document.querySelectorAll('.edit-project').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -126,32 +128,41 @@ document.getElementById('editProjectForm').addEventListener('submit', function(e
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            window.Jikko?.showToast('Projet modifié', 'Les modifications sont enregistrées.');
+            setTimeout(() => location.reload(), 500);
         } else {
-            alert('Erreur : ' + data.message);
+            window.Jikko?.showToast('Erreur', data.message || 'Impossible de modifier le projet');
         }
-    });
+    })
+    .catch(() => window.Jikko?.showToast('Erreur', 'Veuillez réessayer.'));
 });
-
 
 document.querySelectorAll('.delete-project').forEach(btn => {
     btn.addEventListener('click', function() {
-        if (confirm('Voulez-vous vraiment supprimer le projet "' + this.dataset.nom + '" ?\nToutes les tâches associées seront également supprimées.')) {
-            fetch('ajax/projects.php?action=delete', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({id: this.dataset.id})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Erreur : ' + data.message);
-                }
-            });
-        }
+        document.getElementById('delete_project_id').value = this.dataset.id;
+        document.getElementById('delete_project_name').textContent = this.dataset.nom;
+        new bootstrap.Modal(document.getElementById('deleteProjectModal')).show();
     });
+});
+
+document.getElementById('confirmDeleteProject')?.addEventListener('click', function() {
+    const projectId = document.getElementById('delete_project_id').value;
+    
+    fetch('ajax/projects.php?action=delete', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: projectId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.Jikko?.showToast('Projet supprimé', 'Il a été retiré.');
+            setTimeout(() => location.reload(), 500);
+        } else {
+            window.Jikko?.showToast('Erreur', data.message || 'Suppression impossible');
+        }
+    })
+    .catch(() => window.Jikko?.showToast('Erreur', 'Veuillez réessayer.'));
 });
 </script>
 

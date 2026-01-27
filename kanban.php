@@ -1,7 +1,7 @@
 <?php require_once 'includes/header.php'; ?>
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="fas fa-columns"></i> Kanban Board</h2>
+       
     </div>
 </div>
 
@@ -33,11 +33,12 @@ $prioriteBadge = [
 <div class="row g-0">
     <?php foreach ($statuts as $statut => $label): ?>
         <div class="col-lg-4">
-            <div class="card" style="border-radius: 0; border-left: 1px solid #dee2e6; border-right: 0;">
-                <div class="card-header bg-<?= $statut === 'a_faire' ? 'secondary' : ($statut === 'en_cours' ? 'warning' : 'success') ?>">
-                    <h5 class="mb-0 text-white">
+            <div class="card kanban-board">
+                <?php $headerClass = $statut === 'a_faire' ? 'kanban-header--todo' : ($statut === 'en_cours' ? 'kanban-header--doing' : 'kanban-header--done'); ?>
+                <div class="card-header kanban-header <?= $headerClass ?>">
+                    <h5 class="mb-0">
                         <?= $label ?>
-                        <span class="badge bg-light text-dark ms-2"><?= count($tachesByStatus[$statut]) ?></span>
+                        <span class="badge kanban-count ms-2"><?= count($tachesByStatus[$statut]) ?></span>
                     </h5>
                 </div>
                 <div class="card-body p-0">

@@ -136,11 +136,19 @@ document.getElementById("addTaskForm").addEventListener("submit", function (e) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        location.reload();
+        window.Jikko?.showToast(
+          "Tâche ajoutée",
+          "Elle apparaît dans la liste.",
+        );
+        setTimeout(() => location.reload(), 500);
       } else {
-        alert("Erreur : " + data.message);
+        window.Jikko?.showToast(
+          "Erreur",
+          data.message || "Impossible d'ajouter la tâche",
+        );
       }
-    });
+    })
+    .catch(() => window.Jikko?.showToast("Erreur", "Veuillez réessayer."));
 });
 
 // Gestion des boutons d'édition
@@ -181,11 +189,19 @@ document
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          location.reload();
+          window.Jikko?.showToast(
+            "Tâche mise à jour",
+            "Modifications enregistrées.",
+          );
+          setTimeout(() => location.reload(), 500);
         } else {
-          alert("Erreur : " + data.message);
+          window.Jikko?.showToast(
+            "Erreur",
+            data.message || "Impossible de modifier la tâche",
+          );
         }
-      });
+      })
+      .catch(() => window.Jikko?.showToast("Erreur", "Veuillez réessayer."));
   });
 
 // Gestion des boutons de suppression
@@ -200,11 +216,21 @@ document.querySelectorAll(".delete-task").forEach((btn) => {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            location.reload();
+            window.Jikko?.showToast(
+              "Tâche supprimée",
+              "Elle a été retirée.",
+            );
+            setTimeout(() => location.reload(), 450);
           } else {
-            alert("Erreur : " + data.message);
+            window.Jikko?.showToast(
+              "Erreur",
+              data.message || "Suppression impossible",
+            );
           }
-        });
+        })
+        .catch(() =>
+          window.Jikko?.showToast("Erreur", "Veuillez réessayer."),
+        );
     }
   });
 });
