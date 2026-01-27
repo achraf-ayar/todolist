@@ -12,14 +12,6 @@ try {
     ");
     $tachesParStatut = $stmt->fetchAll();
     
-    // Tâches par projet
-    $stmt = $pdo->query("
-        SELECT p.nom as projet, COUNT(t.id) as count
-        FROM projets p
-        LEFT JOIN taches t ON t.projet_id = p.id
-        GROUP BY p.id, p.nom
-        ORDER BY count DESC
-    ");
     $tachesParProjet = $stmt->fetchAll();
     
     // Tâches sans projet
@@ -54,6 +46,10 @@ try {
     ");
     $tachesParPriorite = $stmt->fetchAll();
     
+    // Tâches terminées par jour 
+    $stmt = $pdo->query("\n        SELECT DATE(date_creation) as jour, COUNT(*) as count\n        FROM taches\n        WHERE statut = 'termine'\n          AND date_creation >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)\n        GROUP BY DATE(date_creation)\n        ORDER BY jour ASC\n    ");
+    $tachesTermineesParJour = $stmt->fetchAll();
+
     // Total des tâches
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM taches");
     $totalTaches = $stmt->fetch()['count'];
@@ -73,9 +69,9 @@ try {
             'taches_par_statut' => $tachesParStatut,
             'taches_par_projet' => $tachesParProjet,
             'taches_completees_semaine' => $tachesCompleteesSemaine,
-            'taches_par_priorite' => $tachesParPriorite,
             'total_taches' => $totalTaches,
-            'taches_en_retard' => $tachesEnRetard
+            'taches_en_retard' => $tachesEnRetard,
+            'taches_terminees_par_jour' => $tachesTermineesParJour
         ]
     ]);
     
