@@ -403,55 +403,6 @@ define('DB_PASS', 'todolist_pass'); // Database password
 
 Sessions are managed in `config/session.php` to maintain user state across requests.
 
-## Usage
-
-### Daily Workflow
-
-1. **Start Your Day** 📅
-   - Open the application at `index.php`
-   - Review your tasks on the dashboard
-   - Check overdue tasks and due dates
-
-2. **Create Tasks** ➕
-   - Click "New Task" button
-   - Fill in task details
-   - Set priority and due date
-   - Assign to a project and add tags
-
-3. **Update Progress** 🔄
-   - Use Kanban board for visual management
-   - Drag tasks between status columns
-   - Mark tasks as completed
-
-4. **Organize with Projects** 📁
-   - Group related tasks into projects
-   - Use consistent colors for visual identification
-   - Filter dashboard by project
-
-5. **Use Tags Effectively** 🏷️
-   - Create tags for task categories
-   - Use color coding for quick recognition
-   - Filter by tags for focused work
-
-6. **Monitor Progress** 📊
-   - Check statistics page regularly
-   - Review completion rates
-   - Track priority distribution
-   - Monitor project progress
-
-### Keyboard Shortcuts
-
-- **Ctrl/Cmd + Click** - Select multiple tags when creating/editing tasks
-
-### Tips & Tricks
-
-- 💡 Use high priority for urgent tasks
-- 💡 Set due dates to track deadlines
-- 💡 Use projects to group related work
-- 💡 Create tags for recurring task categories
-- 💡 Check statistics to identify bottlenecks
-- 💡 Use the Kanban board for visual workflow management
-
 ## API Endpoints
 
 ### Tasks
@@ -535,9 +486,31 @@ For issues, suggestions, or contributions, please:
 
 This project is open source and available under the MIT License.
 
----
+```
+MIT License
 
-**Made with ❤️ for productivity**
+Copyright (c) 2026 Jikko Todo List
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
 
 Version: 1.0.0  
 Last Updated: January 2026
