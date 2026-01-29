@@ -31,7 +31,6 @@ Just as jikko represents the act of execution and putting plans into action, thi
   - [Tags](#tags)
 - [Database Schema](#database-schema)
 - [Configuration](#configuration)
-- [Usage](#usage)
 
 ## Features
 
