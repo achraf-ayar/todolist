@@ -138,3 +138,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Confirmer suppression d'une tâche -->
+<div class="modal fade" id="deleteTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
+                <p class="text-muted mb-0"><strong id="deleteTaskTitle"></strong></p>
+                <p class="text-danger mt-3 mb-0"><i class="fas fa-info-circle"></i> Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteTask">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

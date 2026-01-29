@@ -205,34 +205,45 @@ document
   });
 
 // Gestion des boutons de suppression
+let taskToDelete = null;
 document.querySelectorAll(".delete-task").forEach((btn) => {
   btn.addEventListener("click", function () {
-    if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
-      fetch("ajax/tasks.php?action=delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: this.dataset.id }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            window.Jikko?.showToast(
-              "Tâche supprimée",
-              "Elle a été retirée.",
-            );
-            setTimeout(() => location.reload(), 450);
-          } else {
-            window.Jikko?.showToast(
-              "Erreur",
-              data.message || "Suppression impossible",
-            );
-          }
-        })
-        .catch(() =>
-          window.Jikko?.showToast("Erreur", "Veuillez réessayer."),
-        );
-    }
+    taskToDelete = this.dataset.id;
+    const taskTitle = this.closest('.card, .list-group-item, tr')?.querySelector('.task-title, .fw-bold')?.textContent || 'cette tâche';
+    document.getElementById("deleteTaskTitle").textContent = taskTitle;
+    const deleteModal = new bootstrap.Modal(document.getElementById("deleteTaskModal"));
+    deleteModal.show();
   });
+});
+
+// Confirmer la suppression
+document.getElementById("confirmDeleteTask")?.addEventListener("click", function () {
+  if (!taskToDelete) return;
+  
+  fetch("ajax/tasks.php?action=delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: taskToDelete }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        window.Jikko?.showToast(
+          "Tâche supprimée",
+          "Elle a été retirée.",
+        );
+        bootstrap.Modal.getInstance(document.getElementById("deleteTaskModal")).hide();
+        setTimeout(() => location.reload(), 450);
+      } else {
+        window.Jikko?.showToast(
+          "Erreur",
+          data.message || "Suppression impossible",
+        );
+      }
+    })
+    .catch(() =>
+      window.Jikko?.showToast("Erreur", "Veuillez réessayer."),
+    );
 });
 
 // Gestion des filtres
