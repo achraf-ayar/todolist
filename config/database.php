@@ -1,5 +1,5 @@
 <?php
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'https://ayar.dwm.ma/');
 define('DB_NAME', '
 ac_ayar_todo_list');
 define('DB_USER', 'ac_ayar_todolist_user');
