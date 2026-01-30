@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS todo_list;
-USE todo_list;
+CREATE DATABASE IF NOT EXISTS ac_ayar_todo_list;
+USE ac_ayar_todo_list;
 
 CREATE TABLE IF NOT EXISTS projets (
     id INT PRIMARY KEY AUTO_INCREMENT,

@@ -1,8 +1,9 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'todo_list');
-define('DB_USER', 'todolist_user');
-define('DB_PASS', 'todolist_pass');
+define('DB_NAME', '
+ac_ayar_todo_list ');
+define('DB_USER', 'ac_ayar_todolist_user');
+define('DB_PASS', 'Todolist_pass1');
 
 try {
     $pdo = new PDO(
